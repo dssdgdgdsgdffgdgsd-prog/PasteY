@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastebin Clone | Share Text & Code Snippets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #024dbc;
+            --secondary: #f0f6ff;
+            --accent: #ff6600;
+            --text: #333;
+            --light-text: #666;
+            --border: #ddd;
+            --success: #4CAF50;
+            --error: #f44336;
+            --dark-bg: #1e1e1e;
+        }
+        
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: white;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+            background-color: var(--secondary);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #013a8f;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background: #e55c00;
+        }
+        
+        main {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .hero h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .hero p {
+            color: var(--light-text);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(2, 77, 188, 0.1);
+        }
+        
+        .input-group textarea {
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        
+        .paste-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .form-btn:hover {
+            background: #013a8f;
+        }
+        
+        .form-btn-accent {
+            background: var(--accent);
+        }
+        
+        .form-btn-accent:hover {
+            background: #e55c00;
+        }
+        
+        .paste-list {
+            margin-top: 1rem;
+        }
+        
+        .paste-item {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .paste-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .paste-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .paste-preview {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .paste-meta {
+            font-size: 0.8rem;
+            color: var(--light-text);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: var(--light-text);
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+        
+        .form-container {
+            padding: 2rem;
+        }
+        
+        .form-title {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: var(--error);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            padding: 0.8rem;
+            background: rgba(244, 67, 54, 0.05);
+            border-radius: 4px;
+            border-left: 3px solid var(--error);
+        }
+        
+        .success-message {
+            color: var(--success);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            padding: 0.8rem;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 4px;
+            border-left: 3px solid var(--success);
+        }
+        
+        .dashboard {
+            display: none;
+        }
+        
+        .dashboard-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .dashboard-header h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .user-info:last-child {
+            border-bottom: none;
+        }
+        
+        .user-info div:first-child {
+            font-weight: 500;
+            color: var(--light-text);
+        }
+        
+        .password-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .password-mask {
+            letter-spacing: 2px;
+        }
+        
+        .toggle-password {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .paste-view {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .paste-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .paste-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .paste-content {
+            background: var(--dark-bg);
+            color: #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        .paste-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--light-text);
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        footer {
+            background: white;
+            border-top: 1px solid var(--border);
+            color: var(--light-text);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: var(--light-text);
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 968px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .paste-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+        
+        .syntax-highlight {
+            color: #569cd6; /* Blue for keywords */
+        }
+        
+        .syntax-string {
+            color: #ce9178; /* Orange for strings */
+        }
+        
+        .syntax-comment {
+            color: #6a9955; /* Green for comments */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-paste"></i>
+            <span>Pastebin Clone</span>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#" class="active" id="navHome">Home</a></li>
+                <li><a href="#" id="navTrending">Trending</a></li>
+                <li><a href="#" id="navMyPastes">My Pastes</a></li>
+                <li><a href="#" id="navTools">Tools</a></li>
+                <li><a href="#" id="navFAQ">FAQ</a></li>
+            </ul>
+        </nav>
+        
+        <div class="auth-buttons">
+            <button class="btn btn-outline" id="logoutBtn" style="display: none;">Log Out</button>
+            <button class="btn btn-primary" id="loginHeaderBtn">Sign In</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <!-- Home Page Content -->
+            <div id="homePage">
+                <div class="hero">
+                    <h1>Pastebin Clone</h1>
+                    <p>A website where you can store text and code snippets online for a set period of time. Share with friends, colleagues, or keep them private.</p>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="createPasteBtn"><i class="fas fa-plus"></i> Create New Paste</button>
+                        <button class="btn btn-outline" id="trendingBtn"><i class="fas fa-chart-line"></i> See Trending Pastes</button>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="card">
+                        <h2><i class="fas fa-edit"></i> Create New Paste</h2>
+                        
+                        <div class="input-group">
+                            <label for="pasteTitle">Paste Title</label>
+                            <input type="text" id="pasteTitle" placeholder="My Awesome Code Snippet">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="pasteContent">Paste Content</label>
+                            <textarea id="pasteContent" placeholder="Paste your text or code here..."></textarea>
+                        </div>
+                        
+                        <div class="paste-options">
+                            <div class="input-group">
+                                <label for="pasteSyntax">Syntax Highlighting</label>
+                                <select id="pasteSyntax">
+                                    <option value="none">None</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="php">PHP</option>
+                                    <option value="sql">SQL</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="pasteExpiry">Paste Expiration</label>
+                                <select id="pasteExpiry">
+                                    <option value="never">Never</option>
+                                    <option value="10min">10 Minutes</option>
+                                    <option value="1hour">1 Hour</option>
+                                    <option value="1day" selected>1 Day</option>
+                                    <option value="1week">1 Week</option>
+                                    <option value="1month">1 Month</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="pasteExposure">Paste Exposure</label>
+                                <select id="pasteExposure">
+                                    <option value="public" selected>Public</option>
+                                    <option value="unlisted">Unlisted</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="pasteFolder">Paste Folder</label>
+                                <select id="pasteFolder">
+                                    <option value="none">None</option>
+                                    <option value="snippets">Code Snippets</option>
+                                    <option value="docs">Documentation</option>
+                                    <option value="logs">Logs</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="form-btn form-btn-accent" id="submitPasteBtn"><i class="fas fa-save"></i> Create New Paste</button>
+                            <button class="form-btn btn-outline"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2><i class="fas fa-history"></i> Recent Public Pastes</h2>
+                        <div class="paste-list" id="recentPastesList">
+                            <!-- Recent pastes will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Authentication Container -->
+            <div class="auth-container" id="authContainer" style="display: none;">
+                <div class="tabs">
+                    <div class="tab active" data-form="login">Sign In</div>
+                    <div class="tab" data-form="register">Create Account</div>
+                </div>
+                
+                <div class="form-container">
+                    <form id="loginForm">
+                        <h2 class="form-title">Sign in to your account</h2>
+                        
+                        <div class="input-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        </div>
+                        
+                        <button type="submit" class="form-btn" style="width: 100%;">Sign In</button>
+                        
+                        <div class="error-message" id="loginErrorMessage">
+                            Invalid username or password. Please try again.
+                        </div>
+                        
+                        <div class="form-footer" style="margin-top: 1rem; text-align: center;">
+                            <a href="#" id="forgotPassword">Forgot your password?</a>
+                        </div>
+                    </form>
+                    
+                    <form id="registerForm" style="display: none;">
+                        <h2 class="form-title">Create a new account</h2>
+                        
+                        <div class="input-group">
+                            <label for="registerUsername">Username</label>
+                            <input type="text" id="registerUsername" placeholder="Choose a username" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" placeholder="Create a password" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="registerConfirmPassword">Confirm Password</label>
+                            <input type="password" id="registerConfirmPassword" placeholder="Confirm your password" required>
+                        </div>
+                        
+                        <button type="submit" class="form-btn" style="width: 100%;">Create Account</button>
+                        
+                        <div class="error-message" id="registerErrorMessage">
+                            Passwords do not match. Please try again.
+                        </div>
+                        
+                        <div class="success-message" id="registerSuccessMessage">
+                            Account created successfully! You can now sign in.
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Dashboard -->
+            <div class="dashboard" id="dashboard">
+                <div class="dashboard-header">
+                    <h1>Welcome, <span id="welcomeUser">User</span>!</h1>
+                    <p>You have successfully logged in to your Pastebin account.</p>
+                </div>
+                
+                <div class="dashboard-content">
+                    <div class="card">
+                        <h3><i class="fas fa-user-circle"></i> Account Details</h3>
+                        <div class="user-info">
+                            <div>Username:</div>
+                            <div id="displayUsername"></div>
+                        </div>
+                        <div class="user-info">
+                            <div>Email:</div>
+                            <div id="displayEmail"></div>
+                        </div>
+                        <div class="user-info">
+                            <div>Member since:</div>
+                            <div id="displayMemberSince"></div>
+                        </div>
+                        <div class="user-info">
+                            <div>Password:</div>
+                            <div class="password-display">
+                                <span class="password-mask" id="passwordMask">••••••••</span>
+                                <button class="toggle-password" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Account Stats</h3>
+                        <div class="user-info">
+                            <div>Total Pastes:</div>
+                            <div id="totalPastes">0</div>
+                        </div>
+                        <div class="user-info">
+                            <div>Public Pastes:</div>
+                            <div id="publicPastes">0</div>
+                        </div>
+                        <div class="user-info">
+                            <div>Private Pastes:</div>
+                            <div id="privatePastes">0</div>
+                        </div>
+                        <div class="user-info">
+                            <div>Total Views:</div>
+                            <div id="totalViews">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3><i class="fas fa-history"></i> My Recent Pastes</h3>
+                        <div class="paste-list" id="userPastesList">
+                            <!-- User pastes will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Paste View -->
+            <div class="paste-view" id="pasteView">
+                <div class="paste-header">
+                    <h2 id="viewPasteTitle">Paste Title</h2>
+                    <div class="paste-actions">
+                        <button class="btn btn-outline" id="rawPasteBtn"><i class="fas fa-code"></i> Raw</button>
+                        <button class="btn btn-outline" id="clonePasteBtn"><i class="fas fa-copy"></i> Clone</button>
+                        <button class="btn btn-outline" id="downloadPasteBtn"><i class="fas fa-download"></i> Download</button>
+                        <button class="btn btn-primary" id="editPasteBtn"><i class="fas fa-edit"></i> Edit</button>
+                    </div>
+                </div>
+                
+                <div class="paste-content" id="viewPasteContent">
+                    // Paste content will appear here
+                </div>
+                
+                <div class="paste-info">
+                    <div class="info-item">
+                        <div class="info-label">Author</div>
+                        <div class="info-value" id="viewPasteAuthor">Anonymous</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Created</div>
+                        <div class="info-value" id="viewPasteDate">Just now</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Syntax</div>
+                        <div class="info-value" id="viewPasteSyntax">None</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Expires</div>
+                        <div class="info-value" id="viewPasteExpiry">Never</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Visibility</div>
+                        <div class="info-value" id="viewPasteVisibility">Public</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Size</div>
+                        <div class="info-value" id="viewPasteSize">0 bytes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Pastebin Clone &copy; 2023 - A secure platform for your code snippets and text storage</p>
+        <div class="footer-links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">API</a>
+            <a href="#">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        // Data storage
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        const pastes = JSON.parse(localStorage.getItem('pastes')) || [];
+        
+        // DOM Elements
+        const homePage = document.getElementById('homePage');
+        const authContainer = document.getElementById('authContainer');
+        const dashboard = document.getElementById('dashboard');
+        const pasteView = document.getElementById('pasteView');
+        
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
+        const registerSuccessMessage = document.getElementById('registerSuccessMessage');
+        const tabs = document.querySelectorAll('.tab');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginHeaderBtn = document.getElementById('loginHeaderBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordMask = document.getElementById('passwordMask');
+        const submitPasteBtn = document.getElementById('submitPasteBtn');
+        const recentPastesList = document.getElementById('recentPastesList');
+        const userPastesList = document.getElementById('userPastesList');
+        const createPasteBtn = document.getElementById('createPasteBtn');
+        
+        // Navigation
+        document.getElementById('navHome').addEventListener('click', showHomePage);
+        document.getElementById('navMyPastes').addEventListener('click', showMyPastes);
+        document.getElementById('createPasteBtn').addEventListener('click', showHomePage);
+        
+        // Initialize the page
+        if (currentUser) {
+            showDashboard(currentUser);
+        } else {
+            showHomePage();
+        }
+        
+        // Load recent pastes
+        loadRecentPastes();
+        
+        // Tab switching functionality
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const formToShow = tab.getAttribute('data-form');
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (formToShow === 'login') {
+                    loginForm.style.display = 'block';
+                    registerForm.style.display = 'none';
+                } else {
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'block';
+                }
+                
+                // Clear messages when switching forms
+                loginErrorMessage.style.display = 'none';
+                registerErrorMessage.style.display = 'none';
+                registerSuccessMessage.style.display = 'none';
+            });
+        });
+        
+        // Login form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Find user in database
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // Successful login
+                loginErrorMessage.style.display = 'none';
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showDashboard(user);
+                authContainer.style.display = 'none';
+            } else {
+                // Failed login
+                loginErrorMessage.style.display = 'block';
+            }
+        });
+        
+        // Register form submission
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                registerErrorMessage.textContent = 'Passwords do not match. Please try again.';
+                registerErrorMessage.style.display = 'block';
+                registerSuccessMessage.style.display = 'none';
+                return;
+            }
+            
+            // Check if username already exists
+            if (users.find(u => u.username === username)) {
+                registerErrorMessage.textContent = 'Username already exists. Please choose a different one.';
+                registerErrorMessage.style.display = 'block';
+                registerSuccessMessage.style.display = 'none';
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                username,
+                email,
+                password,
+                createdAt: new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Show success message
+            registerErrorMessage.style.display = 'none';
+            registerSuccessMessage.style.display = 'block';
+            
+            // Clear form
+            registerForm.reset();
+            
+            // Switch to login form after a delay
+            setTimeout(() => {
+                tabs[0].click();
+            }, 2000);
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', function() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showHomePage();
+        });
+        
+        // Login button in header
+        loginHeaderBtn.addEventListener('click', function() {
+            if (currentUser) {
+                // If user is logged in, log them out
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                showHomePage();
+                logoutBtn.style.display = 'none';
+                loginHeaderBtn.textContent = 'Sign In';
+            } else {
+                // If user is not logged in, show auth forms
+                showAuth();
+            }
+        });
+        
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            
+            if (passwordMask.textContent === '••••••••') {
+                passwordMask.textContent = currentUser.password;
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordMask.textContent = '••••••••';
+                icon.className = 'fas fa-eye';
+            }
+        });
+        
+        // Create new paste
+        submitPasteBtn.addEventListener('click', function() {
+            const title = document.getElementById('pasteTitle').value || 'Untitled';
+            const content = document.getElementById('pasteContent').value;
+            const syntax = document.getElementById('pasteSyntax').value;
+            const expiry = document.getElementById('pasteExpiry').value;
+            const exposure = document.getElementById('pasteExposure').value;
+            const folder = document.getElementById('pasteFolder').value;
+            
+            if (!content.trim()) {
+                alert('Please enter some content for your paste');
+                return;
+            }
+            
+            const newPaste = {
+                id: generateId(),
+                title,
+                content,
+                syntax,
+                expiry,
+                exposure,
+                folder,
+                author: currentUser ? currentUser.username : 'Anonymous',
+                createdAt: new Date().toISOString(),
+                views: 0,
+                size: content.length
+            };
+            
+            pastes.unshift(newPaste);
+            localStorage.setItem('pastes', JSON.stringify(pastes));
+            
+            // Clear form
+            document.getElementById('pasteTitle').value = '';
+            document.getElementById('pasteContent').value = '';
+            
+            // Show the created paste
+            showPaste(newPaste);
+            
+            // Reload recent pastes
+            loadRecentPastes();
+            
+            // Update user stats if logged in
+            if (currentUser) {
+                updateUserStats();
+                loadUserPastes();
+            }
+        });
+        
+        // Show dashboard after login
+        function showDashboard(user) {
+            homePage.style.display = 'none';
+            authContainer.style.display = 'none';
+            dashboard.style.display = 'block';
+            pasteView.style.display = 'none';
+            
+            document.getElementById('welcomeUser').textContent = user.username;
+            document.getElementById('displayUsername').textContent = user.username;
+            document.getElementById('displayEmail').textContent = user.email;
+            document.getElementById('displayMemberSince').textContent = user.createdAt;
+            
+            logoutBtn.style.display = 'block';
+            loginHeaderBtn.textContent = 'Log Out';
+            
+            updateUserStats();
+            loadUserPastes();
+        }
+        
+        // Show authentication forms
+        function showAuth() {
+            homePage.style.display = 'none';
+            authContainer.style.display = 'block';
+            dashboard.style.display = 'none';
+            pasteView.style.display = 'none';
+            
+            // Reset forms
+            loginForm.reset();
+            registerForm.reset();
+            loginErrorMessage.style.display = 'none';
+            registerErrorMessage.style.display = 'none';
+            registerSuccessMessage.style.display = 'none';
+        }
+        
+        // Show home page
+        function showHomePage() {
+            homePage.style.display = 'block';
+            authContainer.style.display = 'none';
+            dashboard.style.display = 'none';
+            pasteView.style.display = 'none';
+            
+            loadRecentPastes();
+        }
+        
+        // Show my pastes
+        function showMyPastes() {
+            if (!currentUser) {
+                showAuth();
+                return;
+            }
+            
+            homePage.style.display = 'none';
+            authContainer.style.display = 'none';
+            dashboard.style.display = 'block';
+            pasteView.style.display = 'none';
+            
+            loadUserPastes();
+        }
+        
+        // Show a specific paste
+        function showPaste(paste) {
+            homePage.style.display = 'none';
+            authContainer.style.display = 'none';
+            dashboard.style.display = 'none';
+            pasteView.style.display = 'block';
+            
+            document.getElementById('viewPasteTitle').textContent = paste.title;
+            document.getElementById('viewPasteContent').textContent = paste.content;
+            document.getElementById('viewPasteAuthor').textContent = paste.author;
+            document.getElementById('viewPasteDate').textContent = new Date(paste.createdAt).toLocaleString();
+            document.getElementById('viewPasteSyntax').textContent = paste.syntax === 'none' ? 'None' : paste.syntax;
+            document.getElementById('viewPasteExpiry').textContent = formatExpiry(paste.expiry);
+            document.getElementById('viewPasteVisibility').textContent = paste.exposure.charAt(0).toUpperCase() + paste.exposure.slice(1);
+            document.getElementById('viewPasteSize').textContent = formatFileSize(paste.size);
+            
+            // Increase view count
+            paste.views++;
+            localStorage.setItem('pastes', JSON.stringify(pastes));
+        }
+        
+        // Load recent public pastes
+        function loadRecentPastes() {
+            const publicPastes = pastes
+                .filter(p => p.exposure === 'public')
+                .slice(0, 5);
+            
+            recentPastesList.innerHTML = '';
+            
+            if (publicPastes.length === 0) {
+                recentPastesList.innerHTML = '<p>No public pastes available.</p>';
+                return;
+            }
+            
+            publicPastes.forEach(paste => {
+                const pasteElement = document.createElement('div');
+                pasteElement.className = 'paste-item';
+                pasteElement.addEventListener('click', () => showPaste(paste));
+                
+                const preview = paste.content.length > 100 
+                    ? paste.content.substring(0, 100) + '...' 
+                    : paste.content;
+                
+                pasteElement.innerHTML = `
+                    <div class="paste-title">${paste.title}</div>
+                    <div class="paste-preview">${preview}</div>
+                    <div class="paste-meta">
+                        <span>By: ${paste.author}</span>
+                        <span>${new Date(paste.createdAt).toLocaleDateString()}</span>
+                        <span>${paste.syntax !== 'none' ? paste.syntax : 'Text'}</span>
+                    </div>
+                `;
+                
+                recentPastesList.appendChild(pasteElement);
+            });
+        }
+        
+        // Load user's pastes
+        function loadUserPastes() {
+            if (!currentUser) return;
+            
+            const userPastes = pastes
+                .filter(p => p.author === currentUser.username)
+                .slice(0, 5);
+            
+            userPastesList.innerHTML = '';
+            
+            if (userPastes.length === 0) {
+                userPastesList.innerHTML = '<p>You have not created any pastes yet.</p>';
+                return;
+            }
+            
+            userPastes.forEach(paste => {
+                const pasteElement = document.createElement('div');
+                pasteElement.className = 'paste-item';
+                pasteElement.addEventListener('click', () => showPaste(paste));
+                
+                const preview = paste.content.length > 100 
+                    ? paste.content.substring(0, 100) + '...' 
+                    : paste.content;
+                
+                pasteElement.innerHTML = `
+                    <div class="paste-title">${paste.title}</div>
+                    <div class="paste-preview">${preview}</div>
+                    <div class="paste-meta">
+                        <span>${new Date(paste.createdAt).toLocaleDateString()}</span>
+                        <span>${paste.exposure}</span>
+                        <span>${paste.syntax !== 'none' ? paste.syntax : 'Text'}</span>
+                        <span>Views: ${paste.views}</span>
+                    </div>
+                `;
+                
+                userPastesList.appendChild(pasteElement);
+            });
+        }
+        
+        // Update user stats
+        function updateUserStats() {
+            if (!currentUser) return;
+            
+            const userPastes = pastes.filter(p => p.author === currentUser.username);
+            const publicPastesCount = userPastes.filter(p => p.exposure === 'public').length;
+            const privatePastesCount = userPastes.filter(p => p.exposure === 'private').length;
+            const totalViews = userPastes.reduce((sum, paste) => sum + paste.views, 0);
+            
+            document.getElementById('totalPastes').textContent = userPastes.length;
+            document.getElementById('publicPastes').textContent = publicPastesCount;
+            document.getElementById('privatePastes').textContent = privatePastesCount;
+            document.getElementById('totalViews').textContent = totalViews;
+        }
+        
+        // Utility functions
+        function generateId() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+        
+        function formatExpiry(expiry) {
+            const expiryMap = {
+                'never': 'Never',
+                '10min': '10 Minutes',
+                '1hour': '1 Hour',
+                '1day': '1 Day',
+                '1week': '1 Week',
+                '1month': '1 Month'
+            };
+            
+            return expiryMap[expiry] || expiry;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Set up paste action buttons
+        document.getElementById('rawPasteBtn').addEventListener('click', function() {
+            const content = document.getElementById('viewPasteContent').textContent;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        });
+        
+        document.getElementById('clonePasteBtn').addEventListener('click', function() {
+            const title = document.getElementById('viewPasteTitle').textContent;
+            const content = document.getElementById('viewPasteContent').textContent;
+            
+            document.getElementById('pasteTitle').value = title + ' (Copy)';
+            document.getElementById('pasteContent').value = content;
+            
+            showHomePage();
+            window.scrollTo(0, 0);
+        });
+        
+        document.getElementById('downloadPasteBtn').addEventListener('click', function() {
+            const title = document.getElementById('viewPasteTitle').textContent;
+            const content = document.getElementById('viewPasteContent').textContent;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        document.getElementById('editPasteBtn').addEventListener('click', function() {
+            const title = document.getElementById('viewPasteTitle').textContent;
+            const content = document.getElementById('viewPasteContent').textContent;
+            
+            document.getElementById('pasteTitle').value = title;
+            document.getElementById('pasteContent').value = content;
+            
+            showHomePage();
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>

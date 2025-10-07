@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mevs Pastes | PasteY</title>
+    <title>PasteY</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -23,6 +23,7 @@
             --success: #4CAF50;
             --error: #f44336;
             --dark-bg: #1e1e1e;
+            --warning: #ff9800;
         }
         
         body {
@@ -118,6 +119,15 @@
         
         .btn-accent:hover {
             background: #e55c00;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e68900;
         }
         
         main {
@@ -519,6 +529,131 @@
             border: 1px solid var(--border);
         }
         
+        .share-url {
+            display: flex;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .share-url input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .share-url button {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .public-pastes-view {
+            display: none;
+        }
+        
+        .public-pastes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-box input {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 300px;
+        }
+        
+        .search-box button {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pastes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .paste-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .paste-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .paste-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .paste-card-preview {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            height: 4.5em;
+        }
+        
+        .paste-card-meta {
+            font-size: 0.8rem;
+            color: var(--light-text);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .visibility-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .visibility-public {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+        
+        .visibility-unlisted {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+        
+        .visibility-private {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+        }
+        
         @media (max-width: 968px) {
             .content {
                 grid-template-columns: 1fr;
@@ -526,6 +661,10 @@
             
             .dashboard-content {
                 grid-template-columns: 1fr;
+            }
+            
+            .pastes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
         
@@ -551,6 +690,20 @@
             .paste-actions {
                 flex-wrap: wrap;
             }
+            
+            .public-pastes-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
         }
         
         .syntax-highlight {
@@ -565,28 +718,16 @@
             color: #6a9955;
         }
         
-        .share-url {
-            display: flex;
-            margin-top: 1rem;
-            gap: 0.5rem;
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--light-text);
         }
         
-        .share-url input {
-            flex: 1;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-        
-        .share-url button {
-            padding: 0.5rem 1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border);
         }
     </style>
 </head>
@@ -600,7 +741,7 @@
         <nav>
             <ul>
                 <li><a href="#" class="active" id="navHome">Home</a></li>
-                <li><a href="#" id="navTrending">Trending</a></li>
+                <li><a href="#" id="navPublic">Public Pastes</a></li>
                 <li><a href="#" id="navMyPastes">My Pastes</a></li>
                 <li><a href="#" id="navTools">Tools</a></li>
                 <li><a href="#" id="navFAQ">FAQ</a></li>
@@ -622,7 +763,7 @@
                     <p>A website where you can store text and code snippets online for a set period of time. Share with friends, colleagues, or keep them private.</p>
                     <div class="form-actions">
                         <button class="btn btn-primary" id="createPasteBtn"><i class="fas fa-plus"></i> Create New Paste</button>
-                        <button class="btn btn-outline" id="trendingBtn"><i class="fas fa-chart-line"></i> See Trending Pastes</button>
+                        <button class="btn btn-accent" id="publicPastesBtn"><i class="fas fa-globe"></i> Browse Public Pastes</button>
                     </div>
                 </div>
                 
@@ -832,6 +973,21 @@
                 </div>
             </div>
             
+            <!-- Public Pastes View -->
+            <div class="public-pastes-view" id="publicPastesView">
+                <div class="public-pastes-header">
+                    <h1><i class="fas fa-globe"></i> Public Pastes</h1>
+                    <div class="search-box">
+                        <input type="text" id="searchPastes" placeholder="Search pastes...">
+                        <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+                
+                <div class="pastes-grid" id="publicPastesGrid">
+                    <!-- Public pastes will be populated by JavaScript -->
+                </div>
+            </div>
+            
             <!-- Paste View -->
             <div class="paste-view" id="pasteView">
                 <div class="paste-header">
@@ -840,7 +996,7 @@
                         <button class="btn btn-outline" id="rawPasteBtn"><i class="fas fa-code"></i> Raw</button>
                         <button class="btn btn-outline" id="clonePasteBtn"><i class="fas fa-copy"></i> Clone</button>
                         <button class="btn btn-outline" id="downloadPasteBtn"><i class="fas fa-download"></i> Download</button>
-                        <button class="btn btn-primary" id="editPasteBtn"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-primary" id="editPasteBtn" style="display: none;"><i class="fas fa-edit"></i> Edit</button>
                     </div>
                 </div>
                 
@@ -914,12 +1070,61 @@
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         const pastes = JSON.parse(localStorage.getItem('pastes')) || [];
         
+        // Initialize with sample data if empty
+        if (pastes.length === 0) {
+            const samplePastes = [
+                {
+                    id: 'sample1',
+                    title: 'JavaScript Hello World',
+                    content: 'console.log("Hello, World!");\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\ngreet("Pastebin User");',
+                    syntax: 'javascript',
+                    expiry: 'never',
+                    exposure: 'public',
+                    folder: 'snippets',
+                    author: 'System',
+                    createdAt: new Date().toISOString(),
+                    views: 42,
+                    size: 98
+                },
+                {
+                    id: 'sample2',
+                    title: 'CSS Centering Example',
+                    content: '.container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n}\n\n.centered {\n  text-align: center;\n}',
+                    syntax: 'css',
+                    expiry: 'never',
+                    exposure: 'public',
+                    folder: 'snippets',
+                    author: 'System',
+                    createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                    views: 28,
+                    size: 125
+                },
+                {
+                    id: 'sample3',
+                    title: 'Python Fibonacci Sequence',
+                    content: 'def fibonacci(n):\n    if n <= 1:\n        return n\n    else:\n        return fibonacci(n-1) + fibonacci(n-2)\n\n# Print first 10 Fibonacci numbers\nfor i in range(10):\n    print(fibonacci(i))',
+                    syntax: 'python',
+                    expiry: 'never',
+                    exposure: 'public',
+                    folder: 'snippets',
+                    author: 'System',
+                    createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                    views: 35,
+                    size: 210
+                }
+            ];
+            
+            samplePastes.forEach(paste => pastes.push(paste));
+            localStorage.setItem('pastes', JSON.stringify(pastes));
+        }
+        
         // DOM Elements
         const homePage = document.getElementById('homePage');
         const authContainer = document.getElementById('authContainer');
         const dashboard = document.getElementById('dashboard');
         const pasteView = document.getElementById('pasteView');
         const rawPasteView = document.getElementById('rawPasteView');
+        const publicPastesView = document.getElementById('publicPastesView');
         
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -936,8 +1141,16 @@
         const recentPastesList = document.getElementById('recentPastesList');
         const userPastesList = document.getElementById('userPastesList');
         const createPasteBtn = document.getElementById('createPasteBtn');
+        const publicPastesBtn = document.getElementById('publicPastesBtn');
         const pasteUrl = document.getElementById('pasteUrl');
         const copyUrlBtn = document.getElementById('copyUrlBtn');
+        const searchPastes = document.getElementById('searchPastes');
+        const searchBtn = document.getElementById('searchBtn');
+        const publicPastesGrid = document.getElementById('publicPastesGrid');
+        const editPasteBtn = document.getElementById('editPasteBtn');
+        
+        // Current paste tracking
+        let currentPasteId = null;
         
         // Initialize the page
         if (currentUser) {
@@ -1119,7 +1332,7 @@
             document.getElementById('pasteContent').value = '';
             
             // Show the created paste
-            showPaste(newPaste);
+            showPaste(newPaste.id);
             
             // Reload recent pastes
             loadRecentPastes();
@@ -1144,6 +1357,7 @@
             dashboard.style.display = 'block';
             pasteView.style.display = 'none';
             rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'none';
             
             document.getElementById('welcomeUser').textContent = user.username;
             document.getElementById('displayUsername').textContent = user.username;
@@ -1164,6 +1378,7 @@
             dashboard.style.display = 'none';
             pasteView.style.display = 'none';
             rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'none';
             
             // Reset forms
             loginForm.reset();
@@ -1180,8 +1395,21 @@
             dashboard.style.display = 'none';
             pasteView.style.display = 'none';
             rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'none';
             
             loadRecentPastes();
+        }
+        
+        // Show public pastes
+        function showPublicPastes() {
+            homePage.style.display = 'none';
+            authContainer.style.display = 'none';
+            dashboard.style.display = 'none';
+            pasteView.style.display = 'none';
+            rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'block';
+            
+            loadPublicPastes();
         }
         
         // Show my pastes
@@ -1196,17 +1424,28 @@
             dashboard.style.display = 'block';
             pasteView.style.display = 'none';
             rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'none';
             
             loadUserPastes();
         }
         
         // Show a specific paste
-        function showPaste(paste) {
+        function showPaste(pasteId) {
+            const paste = pastes.find(p => p.id === pasteId);
+            if (!paste) return;
+            
+            // Check if user can view this paste
+            if (paste.exposure === 'private' && paste.author !== (currentUser ? currentUser.username : 'Anonymous')) {
+                alert('This paste is private and you do not have permission to view it.');
+                return;
+            }
+            
             homePage.style.display = 'none';
             authContainer.style.display = 'none';
             dashboard.style.display = 'none';
             pasteView.style.display = 'block';
             rawPasteView.style.display = 'none';
+            publicPastesView.style.display = 'none';
             
             document.getElementById('viewPasteTitle').textContent = paste.title;
             document.getElementById('viewPasteContent').textContent = paste.content;
@@ -1220,21 +1459,38 @@
             // Set share URL
             pasteUrl.value = window.location.href.split('?')[0] + '?paste=' + paste.id;
             
+            // Show/hide edit button based on ownership
+            if (currentUser && paste.author === currentUser.username) {
+                editPasteBtn.style.display = 'block';
+            } else {
+                editPasteBtn.style.display = 'none';
+            }
+            
+            // Set current paste ID
+            currentPasteId = paste.id;
+            
             // Increase view count
             paste.views++;
             localStorage.setItem('pastes', JSON.stringify(pastes));
         }
         
         // Show raw paste view
-        function showRawPaste(paste) {
+        function showRawPaste(pasteId) {
+            const paste = pastes.find(p => p.id === pasteId);
+            if (!paste) return;
+            
             homePage.style.display = 'none';
             authContainer.style.display = 'none';
             dashboard.style.display = 'none';
             pasteView.style.display = 'none';
             rawPasteView.style.display = 'block';
+            publicPastesView.style.display = 'none';
             
             document.getElementById('rawPasteTitle').textContent = 'Raw: ' + paste.title;
             document.getElementById('rawPasteContent').textContent = paste.content;
+            
+            // Set current paste ID
+            currentPasteId = paste.id;
         }
         
         // Load recent public pastes
@@ -1246,14 +1502,14 @@
             recentPastesList.innerHTML = '';
             
             if (publicPastes.length === 0) {
-                recentPastesList.innerHTML = '<p>No public pastes available.</p>';
+                recentPastesList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No public pastes available yet.</p></div>';
                 return;
             }
             
             publicPastes.forEach(paste => {
                 const pasteElement = document.createElement('div');
                 pasteElement.className = 'paste-item';
-                pasteElement.addEventListener('click', () => showPaste(paste));
+                pasteElement.addEventListener('click', () => showPaste(paste.id));
                 
                 const preview = paste.content.length > 100 
                     ? paste.content.substring(0, 100) + '...' 
@@ -1279,19 +1535,19 @@
             
             const userPastes = pastes
                 .filter(p => p.author === currentUser.username)
-                .slice(0, 5);
+                .slice(0, 10);
             
             userPastesList.innerHTML = '';
             
             if (userPastes.length === 0) {
-                userPastesList.innerHTML = '<p>You have not created any pastes yet.</p>';
+                userPastesList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>You have not created any pastes yet.</p></div>';
                 return;
             }
             
             userPastes.forEach(paste => {
                 const pasteElement = document.createElement('div');
                 pasteElement.className = 'paste-item';
-                pasteElement.addEventListener('click', () => showPaste(paste));
+                pasteElement.addEventListener('click', () => showPaste(paste.id));
                 
                 const preview = paste.content.length > 100 
                     ? paste.content.substring(0, 100) + '...' 
@@ -1309,6 +1565,56 @@
                 `;
                 
                 userPastesList.appendChild(pasteElement);
+            });
+        }
+        
+        // Load public pastes for browsing
+        function loadPublicPastes(searchTerm = '') {
+            let publicPastes = pastes.filter(p => p.exposure === 'public');
+            
+            // Apply search filter if provided
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                publicPastes = publicPastes.filter(p => 
+                    p.title.toLowerCase().includes(term) || 
+                    p.content.toLowerCase().includes(term) ||
+                    p.author.toLowerCase().includes(term)
+                );
+            }
+            
+            publicPastesGrid.innerHTML = '';
+            
+            if (publicPastes.length === 0) {
+                publicPastesGrid.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><i class="fas fa-search"></i><p>No public pastes found. Try a different search term.</p></div>';
+                return;
+            }
+            
+            publicPastes.forEach(paste => {
+                const pasteCard = document.createElement('div');
+                pasteCard.className = 'paste-card';
+                pasteCard.addEventListener('click', () => showPaste(paste.id));
+                
+                const preview = paste.content.length > 150 
+                    ? paste.content.substring(0, 150) + '...' 
+                    : paste.content;
+                
+                const visibilityClass = `visibility-${paste.exposure}`;
+                
+                pasteCard.innerHTML = `
+                    <div class="paste-card-title">${paste.title}</div>
+                    <div class="paste-card-preview">${preview}</div>
+                    <div class="paste-card-meta">
+                        <div>
+                            <div>By: ${paste.author}</div>
+                            <div>${new Date(paste.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                            <span class="visibility-badge ${visibilityClass}">${paste.exposure}</span>
+                        </div>
+                    </div>
+                `;
+                
+                publicPastesGrid.appendChild(pasteCard);
             });
         }
         
@@ -1355,18 +1661,17 @@
         
         // Set up paste action buttons
         document.getElementById('rawPasteBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                showRawPaste(currentPaste);
+            if (currentPasteId) {
+                showRawPaste(currentPasteId);
             }
         });
         
         document.getElementById('clonePasteBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                document.getElementById('pasteTitle').value = currentPaste.title + ' (Copy)';
-                document.getElementById('pasteContent').value = currentPaste.content;
-                document.getElementById('pasteSyntax').value = currentPaste.syntax;
+            const paste = pastes.find(p => p.id === currentPasteId);
+            if (paste) {
+                document.getElementById('pasteTitle').value = paste.title + ' (Copy)';
+                document.getElementById('pasteContent').value = paste.content;
+                document.getElementById('pasteSyntax').value = paste.syntax;
                 
                 showHomePage();
                 window.scrollTo(0, 0);
@@ -1374,12 +1679,12 @@
         });
         
         document.getElementById('downloadPasteBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                const content = currentPaste.content;
+            const paste = pastes.find(p => p.id === currentPasteId);
+            if (paste) {
+                const content = paste.content;
                 const element = document.createElement('a');
                 element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-                element.setAttribute('download', currentPaste.title + '.txt');
+                element.setAttribute('download', paste.title + '.txt');
                 element.style.display = 'none';
                 document.body.appendChild(element);
                 element.click();
@@ -1388,20 +1693,20 @@
         });
         
         document.getElementById('editPasteBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                document.getElementById('pasteTitle').value = currentPaste.title;
-                document.getElementById('pasteContent').value = currentPaste.content;
-                document.getElementById('pasteSyntax').value = currentPaste.syntax;
-                document.getElementById('pasteExpiry').value = currentPaste.expiry;
-                document.getElementById('pasteExposure').value = currentPaste.exposure;
-                document.getElementById('pasteFolder').value = currentPaste.folder;
+            const paste = pastes.find(p => p.id === currentPasteId);
+            if (paste) {
+                document.getElementById('pasteTitle').value = paste.title;
+                document.getElementById('pasteContent').value = paste.content;
+                document.getElementById('pasteSyntax').value = paste.syntax;
+                document.getElementById('pasteExpiry').value = paste.expiry;
+                document.getElementById('pasteExposure').value = paste.exposure;
+                document.getElementById('pasteFolder').value = paste.folder;
                 
                 showHomePage();
                 window.scrollTo(0, 0);
                 
                 // Remove the old paste
-                const pasteIndex = pastes.findIndex(p => p.id === currentPaste.id);
+                const pasteIndex = pastes.findIndex(p => p.id === currentPasteId);
                 if (pasteIndex !== -1) {
                     pastes.splice(pasteIndex, 1);
                     localStorage.setItem('pastes', JSON.stringify(pastes));
@@ -1411,19 +1716,18 @@
         
         // Raw paste view buttons
         document.getElementById('backFromRawBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                showPaste(currentPaste);
+            if (currentPasteId) {
+                showPaste(currentPasteId);
             }
         });
         
         document.getElementById('downloadRawBtn').addEventListener('click', function() {
-            const currentPaste = getCurrentPaste();
-            if (currentPaste) {
-                const content = currentPaste.content;
+            const paste = pastes.find(p => p.id === currentPasteId);
+            if (paste) {
+                const content = paste.content;
                 const element = document.createElement('a');
                 element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-                element.setAttribute('download', currentPaste.title + '.txt');
+                element.setAttribute('download', paste.title + '.txt');
                 element.style.display = 'none';
                 document.body.appendChild(element);
                 element.click();
@@ -1441,16 +1745,23 @@
             }, 2000);
         });
         
+        // Search functionality
+        searchBtn.addEventListener('click', function() {
+            loadPublicPastes(searchPastes.value);
+        });
+        
+        searchPastes.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                loadPublicPastes(searchPastes.value);
+            }
+        });
+        
         // Navigation
         document.getElementById('navHome').addEventListener('click', showHomePage);
+        document.getElementById('navPublic').addEventListener('click', showPublicPastes);
         document.getElementById('navMyPastes').addEventListener('click', showMyPastes);
         document.getElementById('createPasteBtn').addEventListener('click', showHomePage);
-        
-        // Get current paste from view
-        function getCurrentPaste() {
-            const pasteTitle = document.getElementById('viewPasteTitle').textContent;
-            return pastes.find(p => p.title === pasteTitle);
-        }
+        document.getElementById('publicPastesBtn').addEventListener('click', showPublicPastes);
         
         // Check URL for paste parameter
         function checkUrlForPaste() {
@@ -1460,7 +1771,7 @@
             if (pasteId) {
                 const paste = pastes.find(p => p.id === pasteId);
                 if (paste) {
-                    showPaste(paste);
+                    showPaste(pasteId);
                     return true;
                 }
             }
